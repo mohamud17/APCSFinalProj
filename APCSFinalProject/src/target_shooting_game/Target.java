@@ -7,13 +7,20 @@ import javafx.scene.shape.Circle;
 //Use as superclass for all targets
 public abstract class Target extends Circle{
 	protected Image image;
-	private int pointValue;
-	public Target(int radius) {
-		super(radius);
+	private boolean isClicked = false;
+	
+	public Target(double centerX, double centerY, int i) {
+		super(centerX, centerY, i);
+	}
+
+	public abstract int getPointValue();
+	
+	public boolean isClicked() {
+		return isClicked;
 	}
 	
-	public int getPointValue() {
-		return pointValue;
+	public void setClicked(boolean isClicked) {
+		this.isClicked = isClicked;
 	}
 	
 	public void render(GraphicsContext gc) {

@@ -6,10 +6,16 @@ import java.net.MalformedURLException;
 import javafx.scene.image.Image;
 
 public class LargeTarget extends Target {
-
-	public LargeTarget() throws MalformedURLException {
-		super(40);
-		image = new Image(new File("largeTarget.png").toURI().toURL().toString());
+	public LargeTarget(double centerX, double centerY) {
+		super(centerX, centerY, 40);
+		try {
+			image = new Image(new File("largeTarget.png").toURI().toURL().toString());
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 	}
-
+	
+	public int getPointValue() {
+		return 1;
+	}
 }
