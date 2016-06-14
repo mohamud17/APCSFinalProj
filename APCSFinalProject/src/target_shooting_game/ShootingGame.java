@@ -1,5 +1,6 @@
 package target_shooting_game;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -11,6 +12,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -22,16 +24,24 @@ public class ShootingGame extends Application {
 	{
 		launch(args);
 	}
-
+	
+	public Image background;
+	
 	public void start(Stage theStage) throws MalformedURLException
 	{
 		theStage.setTitle("Target Shoot");
+		
+		try {
+			background = new Image(new File("background.png").toURI().toURL().toString());
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 		
 		Group root = new Group();
 		Scene theScene = new Scene(root);
 		theStage.setScene(theScene);
 		
-		Canvas canvas = new Canvas(500, 500);
+		Canvas canvas = new Canvas(720, 450);
 		
 		root.getChildren().add(canvas);
 		
@@ -59,20 +69,36 @@ public class ShootingGame extends Application {
 		gc.setFont(theFont);
 		gc.setStroke(Color.BLACK);
 		gc.setLineWidth(1);
-				
+		final LongValue startNanoTime = new LongValue(0);
+		
 		new AnimationTimer()
 		{
 			public void handle(long currentNanoTime)
 			{
-				// Clear the canvas
+				if(startNanoTime.value == 0) {
+					startNanoTime.value = currentNanoTime;
+				}
 				gc.setFill(new Color(0.85, 0.85, 1.0, 1.0));
 				gc.fillRect(0,0, 512,512);
 				
-				if(targets.isEmpty()) {
-					targets.add(new MediumTarget(Math.random() * 512, Math.random() * 512));
-					targets.add(new SmallTarget(Math.random() * 512, Math.random() * 512));
-					targets.add(new MediumTarget(Math.random() * 512, Math.random() * 512));
+				int badCount = 0;
+				for(Target t: targets) {
+					if(t instanceof BadTarget) {
+						badCount++;
+					}
 				}
+				if(badCount == targets.size()) {
+					targets.clear();
+				}
+				
+				if(targets.isEmpty()) {
+					targets.add(new MediumTarget(Math.random() * 720, Math.random() * 450));
+					targets.add(new BadTarget(Math.random() * 720, Math.random() * 450));
+					targets.add(new SmallTarget(Math.random() * 720, Math.random() * 450));
+					targets.add(new LargeTarget(Math.random() * 720, Math.random() * 450));
+				}
+				
+				gc.drawImage(background, 0, 0);
 				
 				Iterator<Target> i = targets.iterator();
 				while(i.hasNext()) {
@@ -84,15 +110,26 @@ public class ShootingGame extends Application {
 					}
 				}
 				
-				gc.setFill(Color.BLUE);
-				
 				String pointsText = "Points: " + points.value;
-				gc.fillText(pointsText, 360, 36);
-				gc.strokeText(pointsText, 360, 36);
+				gc.fillText(pointsText, 600, 36);
+				gc.strokeText(pointsText, 600, 36);
+				
+				long currentSecs = (currentNanoTime - startNanoTime.value) / 1000000000;
+				long currentMins = currentSecs / 60;
+				String timerText = currentMins + ":" + currentSecs;
+				gc.fillText(timerText, 20, 36);
+				gc.strokeText(timerText, 20, 36);
+				if(currentSecs >= 1) {
+					stop();
+				}
 			}
 		}.start();
-
-
+		
+		gc.fillText("Game Over!", 35, 50);
+		gc.strokeText("Game Over!", 35, 50);
+		gc.fillText("Points: " + points.value, 60, 50);
+		gc.strokeText("Points: " + points.value, 60, 50);
+		
 		theStage.show();
 	}
 }
@@ -102,5 +139,13 @@ class IntValue {
 	
 	public IntValue(int i) {
 		value = i;
+	}
+}
+
+class LongValue {
+	public long value;
+	
+	public LongValue(long l) {
+		value = l;
 	}
 }

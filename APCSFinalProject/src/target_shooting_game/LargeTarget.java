@@ -7,7 +7,7 @@ import javafx.scene.image.Image;
 
 public class LargeTarget extends Target {
 	public LargeTarget(double centerX, double centerY) {
-		super(centerX, centerY, 40);
+		super(centerX, centerY, 64);
 		try {
 			image = new Image(new File("largeTarget.png").toURI().toURL().toString());
 		} catch (MalformedURLException e) {
