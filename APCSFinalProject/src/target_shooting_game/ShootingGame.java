@@ -1,5 +1,9 @@
 package target_shooting_game;
 
+/*
+ * Created By: Will Victoria, Jayna John, Suad Mohamud
+ */
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
